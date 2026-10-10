@@ -1,0 +1,10 @@
+Runtime: .NET 8.0.23
+OS: Microsoft Windows 10.0.26300
+Architecture: X64
+Logical processors: 16
+Configuration: Release
+Seed: 42
+Warmups: 2
+Measured samples: 7
+Elapsed time: Stopwatch; allocation: process-wide GC.GetTotalAllocatedBytes(true).
+Setup and validation excluded; concurrent runtime allocations may contribute.

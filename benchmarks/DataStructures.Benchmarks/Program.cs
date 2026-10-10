@@ -1,8 +1,9 @@
 using DataStructures.Benchmarks;
 
 string selection = args.Length == 0 ? "all" : args[0];
-if (args.Length > 1 || selection is not ("all" or "1"))
-    throw new ArgumentException("Usage: benchmarks [all|1]; run from repository root.");
+if (args.Length > 1 || selection is not ("all" or "1" or "2"))
+    throw new ArgumentException("Usage: benchmarks [all|1|2]; run from repository root.");
 if (!Directory.Exists("activities"))
     throw new InvalidOperationException("Run benchmarks from the repository root.");
 if (selection is "all" or "1") TreeBenchmarks.Run();
+if (selection is "all" or "2") QueueBenchmarks.Run();
