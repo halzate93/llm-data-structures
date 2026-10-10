@@ -60,9 +60,7 @@ public static class Sorting
         // Copilot refinement: disjoint ranges and bounded depth prevent unbounded task creation.
         if (parallelDepth > 0 && end - start >= ParallelThreshold)
         {
-            Parallel.Invoke(
-                () => MergeSort(values, buffer, start, middle, parallelDepth - 1),
-                () => MergeSort(values, buffer, middle, end, parallelDepth - 1));
+            SortHalvesInParallel(values, buffer, start, middle, end, parallelDepth);
         }
         else
         {
@@ -77,4 +75,10 @@ public static class Sorting
         while (right < end) buffer[output++] = values[right++];
         Array.Copy(buffer, start, values, start, end - start);
     }
+
+    // Keep captured delegates out of sequential recursion so only parallel splits allocate closures.
+    private static void SortHalvesInParallel(int[] values, int[] buffer, int start, int middle, int end, int depth) =>
+        Parallel.Invoke(
+            () => MergeSort(values, buffer, start, middle, depth - 1),
+            () => MergeSort(values, buffer, middle, end, depth - 1));
 }

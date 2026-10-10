@@ -15,6 +15,8 @@ with [optimized sorting implementations](../src/DataStructures/Optimized/Sorting
   for both halves before merging, and only forks at 16384 elements or above.
   Depth is bounded by floor(log2(logical processors)) and capped at four, so there
   are at most 16 leaf partitions. On one logical processor it stays sequential.
+- A measured follow-up isolated delegate closures to actual parallel splits:
+  sequential recursion now allocates only the shared merge buffer.
 - All optimized operations validate null and mutate the caller's array into
   ascending order, preserving the assignment's output shape.
 
@@ -25,12 +27,14 @@ unchanged for a stable object sort.
 
 ## Correctness evidence
 
-[SortingTests.cs](../tests/DataStructures.Tests/SortingTests.cs): 15 passing cases
+[SortingTests.cs](../tests/DataStructures.Tests/SortingTests.cs): 16 passing cases
 cover empty/single arrays, duplicate/negative/extreme values, sorted/reverse data,
 insertion cutoff boundaries, parallel cutoff boundaries, and 65537 random
 values. All three optimized paths are compared element-for-element with
 `Array.Sort`; small baseline inputs are also checked. The demo verifies both the
 five-item assignment output and parallel merge sort on 32768 random integers.
+An allocation regression test bounds the warmed sequential path to one integer
+buffer plus at most 1024 bytes of overhead.
 
 ## Complexity
 
@@ -51,17 +55,17 @@ Median milliseconds, 2 warmups and 7 samples, seed 42:
 
 | Distribution | n | Bubble | Heap | Merge | Parallel merge |
 |---|---:|---:|---:|---:|---:|
-| Random | 256 | 0.043 | 0.034 | 0.026 | 0.029 |
-| Reverse | 256 | 0.033 | 0.035 | 0.031 | 0.029 |
-| Random | 4096 | 6.036 | 0.218 | 0.569 | 0.547 |
-| Reverse | 4096 | 5.551 | 0.167 | 0.502 | 0.485 |
-| Random | 32768 | 572.996 | 1.877 | 1.661 | 0.704 |
-| Reverse | 32768 | 328.534 | 1.225 | 0.677 | 0.257 |
-| Random | 262144 | Not run | 19.526 | 17.263 | 4.407 |
-| Reverse | 262144 | Not run | 10.395 | 6.277 | 1.747 |
+| Random | 256 | 0.043 | 0.030 | 0.024 | 0.026 |
+| Reverse | 256 | 0.033 | 0.035 | 0.028 | 0.027 |
+| Random | 4096 | 6.918 | 0.211 | 0.483 | 0.468 |
+| Reverse | 4096 | 5.077 | 0.160 | 0.441 | 0.441 |
+| Random | 32768 | 757.747 | 1.974 | 1.859 | 1.103 |
+| Reverse | 32768 | 369.236 | 1.549 | 0.959 | 0.360 |
+| Random | 262144 | Not run | 23.136 | 15.776 | 4.275 |
+| Reverse | 262144 | Not run | 11.006 | 8.980 | 1.893 |
 
-Random sorting at n=32768 improved about 305x with heapsort. At n=262144 parallel
-merge sort was about 3.9x faster than sequential merge sort for random input.
+Random sorting at n=32768 improved about 384x with heapsort. At n=262144 parallel
+merge sort was about 3.7x faster than sequential merge sort for random input.
 No bubble-sort result is fabricated at n=262144: that quadratic workload is
 deliberately skipped. At n=256 reverse-input heapsort was slightly slower than
 bubble sort; tiny timings do not establish a universal speed advantage.
@@ -74,6 +78,14 @@ parallel scheduling allocations are included. Parallel allocation must be
 process-wide rather than measured on only the caller's thread. Runtime allocation
 noise and tiered JIT effects remain; comparisons are educational, not statistically
 rigorous production benchmarking.
+
+Allocation inspection revealed 1,834,984 bytes for sequential merge sort on
+262144 random integers before the closure refinement. After it, the rerun
+measured 1,048,600 bytes, matching one 1,048,576-byte integer payload plus its
+24-byte array header. Parallel merge sort allocated a median 1,060,496 bytes
+including bounded task scheduling. The prior raw run is preserved in Git history;
+the current CSV reflects the refined version. Timing differences between those
+runs are not attributed solely to this change.
 
 ## Reproduce
 
@@ -93,7 +105,10 @@ heapsort and bounded parallel merge sort, and implemented reference-based tests
 and reproducible measurements.
 
 **Were any LLM-generated suggestions inaccurate or unnecessary?** No inaccurate
-sort output was observed in the covered tests. Quicksort was evaluated but not
+sort output was observed in the covered tests. The initial generated parallel
+implementation unnecessarily allocated closures even along sequential recursion;
+allocation evidence exposed that overhead and it was fixed with a regression
+test. Quicksort was evaluated but not
 chosen because its straightforward form lacks a worst-case O(n log n) guarantee.
 Unbounded recursive task creation and a claim that merge sort is in-place would
 be inappropriate; neither was implemented. The cutoff/depth choices are simple

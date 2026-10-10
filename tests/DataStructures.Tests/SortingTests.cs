@@ -49,6 +49,18 @@ public sealed class SortingTests
     }
 
     [Fact]
+    public void SequentialMergeAllocatesOnlyOneBuffer()
+    {
+        const int count = 65536;
+        var values = new int[count];
+        Sorting.MergeSort(values);
+        long before = GC.GetAllocatedBytesForCurrentThread();
+        Sorting.MergeSort(values);
+        long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        Assert.InRange(allocated, 4L * count, 4L * count + 1024);
+    }
+
+    [Fact]
     public void OptimizedSortsRejectNullExplicitly()
     {
         Assert.Throws<ArgumentNullException>(() => Sorting.HeapSort(null!));
