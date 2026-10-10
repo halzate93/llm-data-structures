@@ -75,10 +75,10 @@ Median valid-task processing milliseconds, 2 warmups and 7 samples:
 
 | Tasks | Baseline | Optimized |
 |---:|---:|---:|
-| 256 | 0.024 | 0.125 |
-| 8192 | 0.955 | 2.405 |
+| 256 | 0.014 | 0.112 |
+| 8192 | 0.405 | 2.305 |
 
-The optimized valid path is slower (about 2.5x at 8192) because it creates
+The optimized valid path is slower (about 5.7x at 8192) because it creates
 structured events and durable-to-the-caller outcome records. Both paths format
 two messages per successful task and discard output through `TextWriter.Null`;
 the optimized message contains additional fields. This compares comparable

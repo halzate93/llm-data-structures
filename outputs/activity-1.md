@@ -44,16 +44,16 @@ Median elapsed milliseconds from seven samples after two warmups:
 
 | Workload | n | Baseline | AVL |
 |---|---:|---:|---:|
-| Ordered build | 256 | 0.088 | 0.054 |
-| Ordered search of all values | 256 | 0.133 | 0.026 |
-| Random build | 256 | 0.016 | 0.072 |
-| Random search of all values | 256 | 0.024 | 0.030 |
-| Ordered build | 2048 | 5.896 | 0.508 |
-| Ordered search of all values | 2048 | 3.506 | 0.077 |
-| Random build | 2048 | 0.140 | 0.273 |
-| Random search of all values | 2048 | 0.095 | 0.091 |
+| Ordered build | 256 | 0.085 | 0.045 |
+| Ordered search of all values | 256 | 0.122 | 0.017 |
+| Random build | 256 | 0.010 | 0.041 |
+| Random search of all values | 256 | 0.015 | 0.024 |
+| Ordered build | 2048 | 5.326 | 0.472 |
+| Ordered search of all values | 2048 | 2.573 | 0.170 |
+| Random build | 2048 | 0.107 | 0.206 |
+| Random search of all values | 2048 | 0.085 | 0.080 |
 
-At n=2048, ordered build improved about 11.6x and ordered retrieval about 45.5x.
+At n=2048, ordered build improved about 11.3x and ordered retrieval about 15.2x.
 Random insertion was slower with AVL: maintaining a guaranteed height costs work
 when the baseline happens already to be reasonably balanced. Memory improvement
 is specifically duplicate compression, not a claim that AVL nodes are smaller.

@@ -55,14 +55,14 @@ Median milliseconds, 2 warmups and 7 samples, seed 42:
 
 | Distribution | n | Bubble | Heap | Merge | Parallel merge |
 |---|---:|---:|---:|---:|---:|
-| Random | 256 | 0.043 | 0.030 | 0.024 | 0.026 |
+| Random | 256 | 0.043 | 0.031 | 0.024 | 0.026 |
 | Reverse | 256 | 0.033 | 0.035 | 0.028 | 0.027 |
 | Random | 4096 | 6.918 | 0.211 | 0.483 | 0.468 |
 | Reverse | 4096 | 5.077 | 0.160 | 0.441 | 0.441 |
-| Random | 32768 | 757.747 | 1.974 | 1.859 | 1.103 |
+| Random | 32768 | 757.747 | 1.975 | 1.859 | 1.103 |
 | Reverse | 32768 | 369.236 | 1.549 | 0.959 | 0.360 |
 | Random | 262144 | Not run | 23.136 | 15.776 | 4.275 |
-| Reverse | 262144 | Not run | 11.006 | 8.980 | 1.893 |
+| Reverse | 262144 | Not run | 11.006 | 8.980 | 1.894 |
 
 Random sorting at n=32768 improved about 384x with heapsort. At n=262144 parallel
 merge sort was about 3.7x faster than sequential merge sort for random input.

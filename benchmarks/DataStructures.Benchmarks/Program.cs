@@ -9,3 +9,4 @@ if (selection is "all" or "1") TreeBenchmarks.Run();
 if (selection is "all" or "2") QueueBenchmarks.Run();
 if (selection is "all" or "3") SortBenchmarks.Run();
 if (selection is "all" or "4") ExecutorBenchmarks.Run();
+Measurement.Consolidate();

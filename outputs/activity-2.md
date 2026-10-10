@@ -60,15 +60,15 @@ Median milliseconds (2 warmups, 7 samples, seed 42):
 
 | Workload | n | List | Heap | Heap batch |
 |---|---:|---:|---:|---:|
-| Enqueue all | 256 | 1.323 | 0.033 | 0.030 |
-| Drain all | 256 | 0.013 | 0.138 | - |
-| Enqueue all | 2048 | 32.451 | 0.105 | 0.046 |
-| Drain all | 2048 | 0.311 | 0.247 | - |
+| Enqueue all | 256 | 1.242 | 0.034 | 0.027 |
+| Drain all | 256 | 0.011 | 0.133 | - |
+| Enqueue all | 2048 | 32.384 | 0.346 | 0.043 |
+| Drain all | 2048 | 0.297 | 0.239 | - |
 
-At n=2048 individual insertion improved about 309x; batch insertion improved
-about 705x relative to repeated sorting. Small-queue heap drain was slower:
+At n=2048 individual insertion improved about 93.7x; batch insertion improved
+about 756x relative to repeated sorting. Small-queue heap drain was slower:
 comparison, sequence, and lock overhead exceed fast contiguous list shifting at
-that size. The larger drain improved only about 1.3x. These measurements do not
+that size. The larger drain improved only about 1.2x. These measurements do not
 claim unlimited scalability or a measured concurrent throughput improvement.
 
 [Raw samples](activity-2-samples.csv) include allocation counts;
